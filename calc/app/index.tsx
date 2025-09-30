@@ -1,4 +1,4 @@
-import { myColors } from '@/styles/colors';
+import { myColors } from '@/styles/Colors';
 import { ThemeContext } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
