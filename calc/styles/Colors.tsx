@@ -1,24 +1,25 @@
 export const colorsPallette = {
-    // Light pallette
-    bgLight: '#FDF6F0',
-    screenLight: '#E8F0FE',
-    textLight: '#3B3B3B',
-    numLight: '#FFE0AC',
-    opLight: '#FFB4B4',
-    equalLight: '#CBA6F7',
-    clearLight: '#F7A4A4',
-    resultLight: '#A8D8B9',
-
-    // Dark pallette
-    bgDark: "#2C2C34",
-    screenDark: "#3E4157",
-    textDark: "#F5F5F5",
-    numDark: "#FFD8A8",
-    opDark: "#FF9E9E",
-    equalDark: "#B68CFF",
-    clearDark: "#FF7B7B",
-    resultDark: "#81C784",
-}
+  // Light palette
+  bgLight: '#FAF9F6',
+  screenLight: '#E3F2FD',
+  textLight: '#2B2B2B',
+  numLight: '#FFD699',
+  opLight: '#FF9999',
+  equalLight: '#B388FF',
+  clearLight: '#64B5F6',
+  resultLight: '#81C784',
+  
+  // Dark palette
+  bgDark: '#1E1E26',
+  screenDark: '#2D2F3A',
+  textDark: '#FFFFFF',
+  numDark: '#FFC766',
+  opDark: '#FF7373',
+  equalDark: '#9C6EFF',
+  clearDark: '#1976D2',
+  resultDark: '#66BB6A',
+};
 
 
     
+

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { Styles } from "@/styles/GlobalStyles";
 import { colorsPallette } from '@/styles/Colors';
 import { ThemeContext } from '@/context/themeContext';
 import { StyleSheet, Switch, View } from "react-native";
@@ -9,7 +10,7 @@ export default function Index() {
   const [theme, setTheme] = useState("light");
   return (
     <ThemeContext.Provider value={theme}>
-      <View style={theme === 'light' ? style.container : [style.container, {backgroundColor: colorsPallette.bgDark}]}>
+      <View style={theme === 'light' ? Styles.container : [Styles.container, {backgroundColor: colorsPallette.bgDark}]}>
         <StatusBar style="auto" />
         <Switch
           value={theme === 'light'}
@@ -23,12 +24,3 @@ export default function Index() {
     </ThemeContext.Provider>
   );
 }
-
-const style = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colorsPallette.bgLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
-})

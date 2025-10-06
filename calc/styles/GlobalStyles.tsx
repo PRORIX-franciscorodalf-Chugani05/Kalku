@@ -1,6 +1,13 @@
 import { StyleSheet } from "react-native";
+import { colorsPallette } from "./Colors";
 
 export const Styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: colorsPallette.bgLight,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     btn: {
         width: 72,
         height: 72,
