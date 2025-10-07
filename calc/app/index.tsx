@@ -3,14 +3,14 @@ import { StatusBar } from 'expo-status-bar';
 import { Styles } from "@/styles/GlobalStyles";
 import { colorsPallette } from '@/styles/Colors';
 import { ThemeContext } from '@/context/themeContext';
-import { StyleSheet, Switch, View, Text, Pressable } from "react-native";
+import { StyleSheet, Switch, View, Text } from "react-native";
 import Button from '@/components/Buttons';
 
 export default function Index() {
   const [theme, setTheme] = useState("light");
-
-  const [input, setInput] = useState("0");
-  const [result, setResult] = useState("0");
+  const [input, setInput] = useState("");
+  const [result, setResult] = useState("");
+  const [showResult, setShowResult] = useState(false);
 
   const operadores = ["+", "-", "*", "/"];
 
@@ -29,8 +29,9 @@ export default function Index() {
   };
 
   const limpiarTodo = () => {
-    setInput("0");
-    setResult("0");
+    setInput("");
+    setResult("");
+    setShowResult(false);
   };
 
   const borrarUltimo = () => {
@@ -40,13 +41,14 @@ export default function Index() {
   };
 
   const aplicarResultado = () => {
-    if (result !== "") setInput(result);
+    setShowResult(true);
+    setInput(result);
   };
 
   const agregarPunto = () => {
     const partes = input.split(/[\+\-\*\/]/);
     const ultimoNumero = partes[partes.length - 1];
-    if (ultimoNumero.includes(".")) return; // ya hay un punto
+    if (ultimoNumero.includes(".")) return;
     const nuevoInput = input + ".";
     setInput(nuevoInput);
     calcular(nuevoInput);
@@ -75,7 +77,6 @@ export default function Index() {
 
     let nuevoInput = input === "0" ? simbolo : input + simbolo;
 
-    // evitar operadores seguidos
     if (operadores.includes(simbolo) && operadores.includes(input.slice(-1))) {
       nuevoInput = input.slice(0, -1) + simbolo;
     }
@@ -148,36 +149,42 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <ThemeContext.Provider value={theme}>
-      <View style={theme === 'light' ? Styles.container : [Styles.container, {backgroundColor: colorsPallette.bgDark}]}>
-        <StatusBar style="auto" />
-        <Switch
-          value={theme === 'light'}
-          onValueChange={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-        />
-      
-        {/* Pantalla */}
-        <View style={styles.display}>
-          <Text>{input}</Text>
-          <Text>{result}</Text>
-        </View>
+        <View style={theme === 'light' ? Styles.container : [Styles.container, {backgroundColor: colorsPallette.bgDark}]}>
+          <StatusBar style="auto" />
+          <Switch
+            value={theme === 'light'}
+            onValueChange={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          />
 
-        {/* Botonera */}
-        <View>
-          {buttons.map((row, i) => (
-            <View key={i} style={styles.row}>
-              {row.map((btn) => (
-                <Button
-                  key={btn.label}
-                  label={btn.label}
-                  type={btn.type}
-                  onPress={() => handlePress(btn.label)}
-                />
-              ))}
-            </View>
-          ))}
+          {/* Pantalla */}
+          <View style={Styles.display}>
+            <Text
+              style={[
+                Styles.input,
+                theme === 'light' ? null : { color: colorsPallette.textDark },
+                showResult && Styles.result
+              ]}
+            >
+              {input}
+            </Text>
+          </View>
+
+          {/* Botonera */}
+          <View>
+            {buttons.map((row, i) => (
+              <View key={i} style={Styles.row}>
+                {row.map((btn) => (
+                  <Button
+                    key={btn.label}
+                    label={btn.label}
+                    type={btn.type}
+                    onPress={() => handlePress(btn.label)}
+                  />
+                ))}
+              </View>
+            ))}
+          </View>
         </View>
-        
-      </View>
       </ThemeContext.Provider>
     </View>
   );
@@ -188,14 +195,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     padding: 10,
-  },
-  display: {
-    marginBottom: 20,
-    alignItems: "flex-end",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 10,
   },
 });

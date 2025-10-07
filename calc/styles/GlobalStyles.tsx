@@ -23,21 +23,27 @@ export const Styles = StyleSheet.create({
     row: {
         maxWidth: '100%',
         flexDirection: "row",
+        justifyContent: "space-around",
+        marginBottom: 10,
     },
-    viewButtom: {
-        position: 'absolute',
-        flexDirection: "row",
+    display: {
+        marginBottom: 20,
+        alignItems: "flex-end",
+        width: 120,
+        height: 100,
     },
-    // screenFirstNumber: {
-    //     fontSize: 96,
-    //     color: colorsPallette.grey,
-    //     fontWeight: '200',
-    //     alignSelf: "flex-end",
-    // },
-    // screenSecondNumber: {
-    //     fontSize: 40,
-    //     color: colorsPallette.grey,
-    //     fontWeight: '200',
-    //     alignSelf: "flex-end",
-    // }
+    input: {
+        color: colorsPallette.textLight,
+        padding: 15,
+        fontSize: 50,
+        fontWeight: 'bold',
+        textAlign: 'right',
+    },
+    result: {
+        color: colorsPallette.resultLight,
+        padding: 15,
+        fontSize: 50,
+        fontWeight: 'bold',
+        textAlign: 'right',
+    }
 })
