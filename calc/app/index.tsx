@@ -113,11 +113,36 @@ export default function Index() {
 
   // --- BOTONES ---
   const buttons = [
-    ["⌫", "AC", "%", "÷"],
-    ["7", "8", "9", "×"],
-    ["4", "5", "6", "-"],
-    ["1", "2", "3", "+"],
-    ["±", "0", ".", "="],
+    [
+      { label: "⌫", type: "clear" },
+      { label: "AC", type: "clear" },
+      { label: "%", type: "op" },
+      { label: "÷", type: "op" }
+    ],
+    [
+      { label: "7", type: "num" },
+      { label: "8", type: "num" },
+      { label: "9", type: "num" },
+      { label: "×", type: "op" }
+    ],
+    [
+      { label: "4", type: "num" },
+      { label: "5", type: "num" },
+      { label: "6", type: "num" },
+      { label: "-", type: "op" }
+    ],
+    [
+      { label: "1", type: "num" },
+      { label: "2", type: "num" },
+      { label: "3", type: "num" },
+      { label: "+", type: "op" }
+    ],
+    [
+      { label: "±", type: "num" },
+      { label: "0", type: "num" },
+      { label: ".", type: "num" },
+      { label: "=", type: "equal" }
+    ],
   ];
 
   return (
@@ -129,30 +154,29 @@ export default function Index() {
           value={theme === 'light'}
           onValueChange={() => setTheme(theme === 'light' ? 'dark' : 'light')}
         />
-        <Button label="1" type="num" onPress={() => console.log("Número 1")} />
-        <Button label="+" type="op" onPress={() => console.log("Operador +")} />
-        <Button label="=" type="equal" onPress={() => console.log("Igual")} />
-        <Button label="C" type="clear" onPress={() => console.log("Clear")} />
-      
       
         {/* Pantalla */}
         <View style={styles.display}>
           <Text>{input}</Text>
           <Text>{result}</Text>
         </View>
-    
+
         {/* Botonera */}
         <View>
           {buttons.map((row, i) => (
             <View key={i} style={styles.row}>
               {row.map((btn) => (
-                <Pressable key={btn} onPress={() => handlePress(btn)}>
-                  <Text>{btn}</Text>
-                </Pressable>
+                <Button
+                  key={btn.label}
+                  label={btn.label}
+                  type={btn.type}
+                  onPress={() => handlePress(btn.label)}
+                />
               ))}
             </View>
           ))}
         </View>
+        
       </View>
       </ThemeContext.Provider>
     </View>
