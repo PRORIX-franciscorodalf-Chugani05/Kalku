@@ -2,11 +2,22 @@ import { StyleSheet } from "react-native";
 import { colorsPallette } from "./Colors";
 
 export const Styles = StyleSheet.create({
-    container: {
+    calculatorContainer: {
         flex: 1,
+        justifyContent: "flex-end",
+        padding: 10,
+    },
+    container: {
         backgroundColor: colorsPallette.bgLight,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    iconContainer: {
+
+    },
+    keyboardContainer: {
+        marginTop: 50,
+        alignItems: "flex-end",
     },
     btn: {
         width: 72,
@@ -29,7 +40,7 @@ export const Styles = StyleSheet.create({
     display: {
         marginBottom: 20,
         alignItems: "flex-end",
-        width: 120,
+        width: 350,
         height: 100,
     },
     input: {

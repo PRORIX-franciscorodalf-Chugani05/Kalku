@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import Button from '@/components/Buttons';
 import { StatusBar } from 'expo-status-bar';
 import { Styles } from "@/styles/GlobalStyles";
+import { TouchableOpacity } from 'react-native';
 import { colorsPallette } from '@/styles/Colors';
 import { ThemeContext } from '@/context/themeContext';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import { StyleSheet, Switch, View, Text } from "react-native";
-import Button from '@/components/Buttons';
+
 
 export default function Index() {
   const [theme, setTheme] = useState("light");
@@ -147,14 +150,22 @@ export default function Index() {
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={Styles.calculatorContainer}>
       <ThemeContext.Provider value={theme}>
         <View style={theme === 'light' ? Styles.container : [Styles.container, {backgroundColor: colorsPallette.bgDark}]}>
           <StatusBar style="auto" />
-          <Switch
-            value={theme === 'light'}
-            onValueChange={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-          />
+
+            <View style={Styles.iconContainer}>
+              <View style={{ marginBottom: 20, alignItems: 'center' }}>
+                <TouchableOpacity onPress={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+                  <Icon
+                    name={theme === 'light' ? 'sun' : 'moon'}
+                    size={30}
+                    color={theme === 'light' ? 'orange' : 'white'}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>          
 
           {/* Pantalla */}
           <View style={Styles.display}>
@@ -170,7 +181,7 @@ export default function Index() {
           </View>
 
           {/* Botonera */}
-          <View>
+          <View style={Styles.keyboardContainer}>
             {buttons.map((row, i) => (
               <View key={i} style={Styles.row}>
                 {row.map((btn) => (
@@ -189,11 +200,3 @@ export default function Index() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-end",
-    padding: 10,
-  },
-});
