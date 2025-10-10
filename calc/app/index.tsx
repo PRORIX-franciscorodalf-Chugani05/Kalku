@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from "react";
 import {
   FlatList,
   GestureResponderEvent,
-  ListRenderItem,
   Modal,
   Switch,
   Text,
@@ -11,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/Buttons";
 import { Styles } from "@/styles/GlobalStyles";
 import { colorsPallette } from "@/styles/Colors";
@@ -60,6 +60,26 @@ const countDigits = (value: string) => {
   return base.replace(/[^0-9]/g, "").length;
 };
 
+const trimLastCharacter = (value: string) => {
+  if (value.length <= 1) {
+    return "0";
+  }
+
+  const trimmed = value.slice(0, -1);
+  if (!trimmed || trimmed === "-" || trimmed === "-0") {
+    return "0";
+  }
+
+  return trimmed;
+};
+
+const appendImplicitMultiplication = (existingTokens: Token[]) => {
+  const lastToken = existingTokens[existingTokens.length - 1];
+  return lastToken === ")" ? [...existingTokens, "*"] : existingTokens;
+};
+
+const exceedsMaxDigits = (value: string) => countDigits(value) > MAX_DIGITS;
+
 const formatNumber = (value: number) => {
   if (!Number.isFinite(value)) {
     return "Error";
@@ -87,6 +107,193 @@ const formatNumber = (value: number) => {
 
   return result;
 };
+
+type DisplayProps = {
+  expression: string;
+  value: string;
+  screenColor: string;
+  textColor: string;
+};
+
+const Display = ({ expression, value, screenColor, textColor }: DisplayProps) => (
+  <View style={[Styles.screen, { backgroundColor: screenColor }]}>
+    <Text
+      style={[Styles.expressionText, { color: textColor }]}
+      numberOfLines={1}
+      adjustsFontSizeToFit
+      minimumFontScale={0.5}
+    >
+      {expression}
+    </Text>
+    <Text
+      style={[Styles.resultText, { color: textColor }]}
+      numberOfLines={1}
+      adjustsFontSizeToFit
+      minimumFontScale={0.3}
+    >
+      {value}
+    </Text>
+  </View>
+);
+
+type KeypadProps = {
+  onClear: () => void;
+  onParenthesis: () => void;
+  onNumberPress: (digit: string) => void;
+  onDecimal: () => void;
+  onToggleSign: () => void;
+  onPercent: () => void;
+  onOperatorPress: (operator: OperatorSymbol) => void;
+  onEquals: () => void;
+  onBackspace: () => void;
+  parenthesisLabel: string;
+};
+
+const Keypad = ({
+  onClear,
+  onParenthesis,
+  onNumberPress,
+  onDecimal,
+  onToggleSign,
+  onPercent,
+  onOperatorPress,
+  onEquals,
+  onBackspace,
+  parenthesisLabel,
+}: KeypadProps) => (
+  <View style={Styles.keypad}>
+    <View style={Styles.row}>
+      <Button label="C" type="clear" onPress={onClear} />
+      <Button label={parenthesisLabel} type="op" onPress={onParenthesis} />
+      <Button label="+/-" type="op" onPress={onToggleSign} />
+      <Button label="%" type="op" onPress={onPercent} />
+      <Button label="/" type="op" onPress={() => onOperatorPress("/")} />
+    </View>
+    <View style={Styles.row}>
+      <Button label="1" type="num" onPress={() => onNumberPress("1")} />
+      <Button label="2" type="num" onPress={() => onNumberPress("2")} />
+      <Button label="3" type="num" onPress={() => onNumberPress("3")} />
+      <Button label="*" type="op" onPress={() => onOperatorPress("*")} />
+    </View>
+    <View style={Styles.row}>
+      <Button label="4" type="num" onPress={() => onNumberPress("4")} />
+      <Button label="5" type="num" onPress={() => onNumberPress("5")} />
+      <Button label="6" type="num" onPress={() => onNumberPress("6")} />
+      <Button label="-" type="op" onPress={() => onOperatorPress("-")} />
+    </View>
+    <View style={Styles.row}>
+      <Button label="7" type="num" onPress={() => onNumberPress("7")} />
+      <Button label="8" type="num" onPress={() => onNumberPress("8")} />
+      <Button label="9" type="num" onPress={() => onNumberPress("9")} />
+      <Button label="+" type="op" onPress={() => onOperatorPress("+")} />
+    </View>
+    <View style={Styles.row}>
+      <Button label="0" type="num" style={Styles.zeroButton} onPress={() => onNumberPress("0")} />
+      <Button label="." type="num" onPress={onDecimal} />
+      <Button label="DEL" type="clear" onPress={onBackspace} />
+      <Button label="=" type="equal" onPress={onEquals} />
+    </View>
+  </View>
+);
+
+type HistoryModalProps = {
+  visible: boolean;
+  history: HistoryEntry[];
+  onClose: () => void;
+  onSelect: (item: HistoryEntry) => void;
+  onDelete: (index: number) => void;
+  onClear: () => void;
+  textColor: string;
+  screenColor: string;
+  isLightTheme: boolean;
+};
+
+const HistoryModal = ({
+  visible,
+  history,
+  onClose,
+  onSelect,
+  onDelete,
+  onClear,
+  textColor,
+  screenColor,
+  isLightTheme,
+}: HistoryModalProps) => (
+  <Modal transparent animationType="slide" visible={visible} onRequestClose={onClose}>
+    <TouchableWithoutFeedback onPress={onClose}>
+      <View style={Styles.historyModalOverlay}>
+        <TouchableWithoutFeedback onPress={() => {}}>
+          <View style={[Styles.historyPanel, { backgroundColor: screenColor }]}>
+            <View style={Styles.historyHeader}>
+              <Text style={[Styles.historyTitle, { color: textColor }]}>Historial</Text>
+              <View style={Styles.historyActions}>
+                {history.length > 0 ? (
+                  <TouchableOpacity onPress={onClear}>
+                    <Text style={[Styles.historyButtonText, { color: textColor }]}>Vaciar</Text>
+                  </TouchableOpacity>
+                ) : null}
+                <TouchableOpacity
+                  style={history.length > 0 ? Styles.historyActionButtonSpacing : undefined}
+                  onPress={onClose}
+                >
+                  <Text style={[Styles.historyButtonText, { color: textColor }]}>Cerrar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <FlatList
+              data={history}
+              keyExtractor={(item, index) => `${item.expression}-${index}`}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  style={[
+                    Styles.historyItem,
+                    { borderBottomColor: isLightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)" },
+                  ]}
+                  onPress={() => onSelect(item)}
+                >
+                  <View style={Styles.historyItemText}>
+                    <Text
+                      style={[Styles.historyExpression, { color: textColor }]}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.6}
+                    >
+                      {item.expression} =
+                    </Text>
+                    <Text
+                      style={[Styles.historyResult, { color: textColor }]}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.6}
+                    >
+                      {item.result}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    style={[Styles.historyDeleteButton, { borderColor: textColor }]}
+                    onPress={(event: GestureResponderEvent) => {
+                      event.stopPropagation();
+                      onDelete(index);
+                    }}
+                  >
+                    <Text style={[Styles.historyDeleteText, { color: textColor }]}>Borrar</Text>
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              )}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={
+                history.length === 0 ? { flexGrow: 1, justifyContent: "center" } : undefined
+              }
+              ListEmptyComponent={
+                <Text style={[Styles.historyEmpty, { color: textColor }]}>Sin cálculos guardados</Text>
+              }
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    </TouchableWithoutFeedback>
+  </Modal>
+);
 
 const toPostfix = (inputTokens: Token[]): Token[] | null => {
   const output: Token[] = [];
@@ -234,9 +441,15 @@ export default function Index() {
   const [historyVisible, setHistoryVisible] = useState(false);
 
   const isLightTheme = theme === "light";
-  const backgroundColor = isLightTheme ? colorsPallette.bgLight : colorsPallette.bgDark;
-  const screenColor = isLightTheme ? colorsPallette.screenLight : colorsPallette.screenDark;
-  const textColor = isLightTheme ? colorsPallette.textLight : colorsPallette.textDark;
+  const themeColors = useMemo(
+    () => ({
+      background: isLightTheme ? colorsPallette.bgLight : colorsPallette.bgDark,
+      screen: isLightTheme ? colorsPallette.screenLight : colorsPallette.screenDark,
+      text: isLightTheme ? colorsPallette.textLight : colorsPallette.textDark,
+    }),
+    [isLightTheme],
+  );
+  const { background: backgroundColor, screen: screenColor, text: textColor } = themeColors;
 
   const resetAfterResult = useCallback(() => {
     setTokens([]);
@@ -259,22 +472,81 @@ export default function Index() {
     setLastExpression(null);
   }, []);
 
+  const handleBackspace = useCallback(() => {
+    if (currentValue === "Error") {
+      handleClear();
+      return;
+    }
+
+    if (isResultDisplayed) {
+      resetAfterResult();
+      const nextValue = trimLastCharacter(currentValue);
+      setCurrentValue(nextValue);
+      setValueEdited(nextValue !== "0");
+      return;
+    }
+
+    if (valueEdited) {
+      const nextValue = trimLastCharacter(currentValue);
+      setCurrentValue(nextValue);
+      setValueEdited(nextValue !== "0");
+      return;
+    }
+
+    if (tokens.length === 0) {
+      return;
+    }
+
+    const workingTokens = [...tokens];
+    const removedToken = workingTokens.pop();
+    if (!removedToken) {
+      return;
+    }
+
+    if (isNumberToken(removedToken)) {
+      setTokens(workingTokens);
+      setCurrentValue(removedToken);
+      setValueEdited(true);
+      return;
+    }
+
+    const previousToken = workingTokens[workingTokens.length - 1];
+    if (previousToken && isNumberToken(previousToken)) {
+      workingTokens.pop();
+      setTokens(workingTokens);
+      setCurrentValue(previousToken);
+      setValueEdited(true);
+      return;
+    }
+
+    setTokens(workingTokens);
+    if (workingTokens.length === 0) {
+      setCurrentValue("0");
+      setValueEdited(false);
+    }
+  }, [
+    currentValue,
+    handleClear,
+    isResultDisplayed,
+    resetAfterResult,
+    tokens,
+    valueEdited,
+  ]);
+
   const handleNumberPress = useCallback(
     (digit: string) => {
       if (currentValue === "Error") {
-        if (countDigits(digit) > MAX_DIGITS) {
+        if (exceedsMaxDigits(digit)) {
           return;
         }
+        handleClear();
         setCurrentValue(digit);
-        setTokens([]);
         setValueEdited(true);
-        setIsResultDisplayed(false);
-        setLastExpression(null);
         return;
       }
 
       if (isResultDisplayed) {
-        if (countDigits(digit) > MAX_DIGITS) {
+        if (exceedsMaxDigits(digit)) {
           return;
         }
         resetAfterResult();
@@ -283,11 +555,7 @@ export default function Index() {
         return;
       }
 
-      let updatedTokens = tokens;
-      const lastToken = tokens[tokens.length - 1];
-      if (lastToken === ")") {
-        updatedTokens = [...tokens, "*"];
-      }
+      const updatedTokens = appendImplicitMultiplication(tokens);
 
       let nextValue: string;
       if (!valueEdited && currentValue === "0") {
@@ -298,7 +566,7 @@ export default function Index() {
         nextValue = currentValue + digit;
       }
 
-      if (countDigits(nextValue) > MAX_DIGITS) {
+      if (exceedsMaxDigits(nextValue)) {
         return;
       }
 
@@ -308,16 +576,14 @@ export default function Index() {
       setCurrentValue(nextValue);
       setValueEdited(true);
     },
-    [currentValue, isResultDisplayed, resetAfterResult, tokens, valueEdited],
+    [currentValue, handleClear, isResultDisplayed, resetAfterResult, tokens, valueEdited],
   );
 
   const handleDecimal = useCallback(() => {
     if (currentValue === "Error") {
+      handleClear();
       setCurrentValue("0.");
-      setTokens([]);
       setValueEdited(true);
-      setIsResultDisplayed(false);
-      setLastExpression(null);
       return;
     }
 
@@ -332,14 +598,10 @@ export default function Index() {
       return;
     }
 
-    let updatedTokens = tokens;
-    const lastToken = tokens[tokens.length - 1];
-    if (lastToken === ")") {
-      updatedTokens = [...tokens, "*"];
-    }
+    const updatedTokens = appendImplicitMultiplication(tokens);
 
     const nextValue = !valueEdited ? "0." : `${currentValue}.`;
-    if (countDigits(nextValue) > MAX_DIGITS) {
+    if (exceedsMaxDigits(nextValue)) {
       return;
     }
 
@@ -349,7 +611,7 @@ export default function Index() {
 
     setCurrentValue(nextValue);
     setValueEdited(true);
-  }, [currentValue, isResultDisplayed, resetAfterResult, tokens, valueEdited]);
+  }, [currentValue, handleClear, isResultDisplayed, resetAfterResult, tokens, valueEdited]);
 
   const handleToggleSign = useCallback(() => {
     if (currentValue === "Error") {
@@ -583,156 +845,63 @@ export default function Index() {
     return displayTokens.join(" ");
   }, [currentValue, isResultDisplayed, lastExpression, tokens, valueEdited]);
 
+  const handleClearHistory = useCallback(() => {
+    setHistory([]);
+  }, []);
+
   const handleDeleteHistory = useCallback((index: number) => {
     setHistory((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
   }, []);
 
-  const renderHistoryItem = useCallback<ListRenderItem<HistoryEntry>>(
-    ({ item, index }) => (
-      <TouchableOpacity
-        style={[
-          Styles.historyItem,
-          { borderBottomColor: isLightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)" },
-        ]}
-        onPress={() => handleHistorySelect(item)}
-      >
-        <View style={Styles.historyItemText}>
-          <Text
-            style={[Styles.historyExpression, { color: textColor }]}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.6}
-          >
-            {item.expression} =
-          </Text>
-          <Text
-            style={[Styles.historyResult, { color: textColor }]}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.6}
-          >
-            {item.result}
-          </Text>
-        </View>
-        <TouchableOpacity
-          style={[Styles.historyDeleteButton, { borderColor: textColor }]}
-          onPress={(event: GestureResponderEvent) => {
-            event.stopPropagation();
-            handleDeleteHistory(index);
-          }}
-        >
-          <Text style={[Styles.historyDeleteText, { color: textColor }]}>Borrar</Text>
-        </TouchableOpacity>
-      </TouchableOpacity>
-    ),
-    [handleDeleteHistory, handleHistorySelect, isLightTheme, textColor],
-  );
+  const expressionLabel = expressionDisplay || "\u00A0";
+  const separatorColor = isLightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)";
 
   return (
     <ThemeContext.Provider value={theme}>
-      <View style={[Styles.container, { backgroundColor }]}>
-        <StatusBar style={isLightTheme ? "dark" : "light"} />
+      <SafeAreaView style={[Styles.safeArea, { backgroundColor }]} edges={["top", "bottom"]}>
+        <View style={[Styles.container, { backgroundColor }]}>
+          <StatusBar style={isLightTheme ? "dark" : "light"} />
 
-        <View style={[Styles.screen, { backgroundColor: screenColor }]}>
-          {expressionDisplay ? (
-            <Text
-              style={[Styles.expressionText, { color: textColor }]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.5}
+          <Display expression={expressionLabel} value={currentValue} screenColor={screenColor} textColor={textColor} />
+
+          <View style={Styles.controlBar}>
+            <Switch value={isLightTheme} onValueChange={(value) => setTheme(value ? "light" : "dark")} />
+            <TouchableOpacity
+              style={[Styles.historyButton, { borderColor: textColor }]}
+              onPress={() => setHistoryVisible(true)}
             >
-              {expressionDisplay}
-            </Text>
-          ) : null}
-          <Text
-            style={[Styles.resultText, { color: textColor }]}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.3}
-          >
-            {currentValue}
-          </Text>
+              <Text style={[Styles.historyButtonText, { color: textColor }]}>Historial</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={[Styles.separator, { backgroundColor: separatorColor }]} />
+
+          <Keypad
+            onClear={handleClear}
+            onParenthesis={handleParenthesis}
+            onNumberPress={handleNumberPress}
+            onDecimal={handleDecimal}
+            onToggleSign={handleToggleSign}
+            onPercent={handlePercent}
+            onOperatorPress={handleOperatorPress}
+            onEquals={handleEquals}
+            onBackspace={handleBackspace}
+            parenthesisLabel={parenthesisButtonLabel}
+          />
+
+          <HistoryModal
+            visible={historyVisible}
+            history={history}
+            onClose={() => setHistoryVisible(false)}
+            onSelect={handleHistorySelect}
+            onDelete={handleDeleteHistory}
+            onClear={handleClearHistory}
+            textColor={textColor}
+            screenColor={screenColor}
+            isLightTheme={isLightTheme}
+          />
         </View>
-
-        <View style={Styles.controlBar}>
-          <Switch value={isLightTheme} onValueChange={(value) => setTheme(value ? "light" : "dark")} />
-          <TouchableOpacity
-            style={[Styles.historyButton, { borderColor: textColor }]}
-            onPress={() => setHistoryVisible(true)}
-          >
-            <Text style={[Styles.historyButtonText, { color: textColor }]}>Historial</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={[Styles.separator, { backgroundColor: isLightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)" }]} />
-
-        <View style={Styles.keypad}>
-          <View style={Styles.row}>
-            <Button label="C" type="clear" onPress={handleClear} />
-            <Button label={parenthesisButtonLabel} type="op" onPress={handleParenthesis} />
-            <Button label="+/-" type="op" onPress={handleToggleSign} />
-            <Button label="%" type="op" onPress={handlePercent} />
-            <Button label="/" type="op" onPress={() => handleOperatorPress("/")} />
-          </View>
-          <View style={Styles.row}>
-            <Button label="7" type="num" onPress={() => handleNumberPress("7")} />
-            <Button label="8" type="num" onPress={() => handleNumberPress("8")} />
-            <Button label="9" type="num" onPress={() => handleNumberPress("9")} />
-            <Button label="*" type="op" onPress={() => handleOperatorPress("*")} />
-          </View>
-          <View style={Styles.row}>
-            <Button label="4" type="num" onPress={() => handleNumberPress("4")} />
-            <Button label="5" type="num" onPress={() => handleNumberPress("5")} />
-            <Button label="6" type="num" onPress={() => handleNumberPress("6")} />
-            <Button label="-" type="op" onPress={() => handleOperatorPress("-")} />
-          </View>
-          <View style={Styles.row}>
-            <Button label="1" type="num" onPress={() => handleNumberPress("1")} />
-            <Button label="2" type="num" onPress={() => handleNumberPress("2")} />
-            <Button label="3" type="num" onPress={() => handleNumberPress("3")} />
-            <Button label="+" type="op" onPress={() => handleOperatorPress("+")} />
-          </View>
-          <View style={Styles.row}>
-            <Button label="0" type="num" style={Styles.zeroButton} onPress={() => handleNumberPress("0")} />
-            <Button label="." type="num" onPress={handleDecimal} />
-            <Button label="=" type="equal" onPress={handleEquals} />
-          </View>
-        </View>
-
-        <Modal
-          transparent
-          animationType="slide"
-          visible={historyVisible}
-          onRequestClose={() => setHistoryVisible(false)}
-        >
-          <TouchableWithoutFeedback onPress={() => setHistoryVisible(false)}>
-            <View style={Styles.historyModalOverlay}>
-              <TouchableWithoutFeedback onPress={() => {}}>
-                <View style={[Styles.historyPanel, { backgroundColor: screenColor }]}>
-                  <View style={Styles.historyHeader}>
-                    <Text style={[Styles.historyTitle, { color: textColor }]}>Historial</Text>
-                    <TouchableOpacity onPress={() => setHistoryVisible(false)}>
-                      <Text style={[Styles.historyButtonText, { color: textColor }]}>Cerrar</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <FlatList
-                    data={history}
-                    keyExtractor={(item, index) => `${item.expression}-${index}`}
-                    renderItem={renderHistoryItem}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={
-                      history.length === 0 ? { flexGrow: 1, justifyContent: "center" } : undefined
-                    }
-                    ListEmptyComponent={
-                      <Text style={[Styles.historyEmpty, { color: textColor }]}>Sin cálculos guardados</Text>
-                    }
-                  />
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-      </View>
+      </SafeAreaView>
     </ThemeContext.Provider>
   );
 }

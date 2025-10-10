@@ -2,11 +2,14 @@ import { StyleSheet } from "react-native";
 import { colorsPallette } from "./Colors";
 
 export const Styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: colorsPallette.bgLight,
     paddingHorizontal: 20,
-    paddingTop: 48,
+    paddingTop: 24,
     paddingBottom: 24,
   },
   controlBar: {
@@ -18,7 +21,7 @@ export const Styles = StyleSheet.create({
   screen: {
     borderRadius: 24,
     padding: 24,
-    minHeight: 140,
+    height: 150,
     justifyContent: "space-between",
     alignItems: "flex-end",
   },
@@ -26,7 +29,7 @@ export const Styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     width: "100%",
     marginTop: 16,
-    marginBottom: 12,
+    marginBottom: 6,
   },
   expressionText: {
     fontSize: 24,
@@ -38,7 +41,7 @@ export const Styles = StyleSheet.create({
     fontWeight: "700",
   },
   keypad: {
-    marginTop: 32,
+    marginTop: 18,
   },
   row: {
     flexDirection: "row",
@@ -86,6 +89,13 @@ export const Styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 16,
+  },
+  historyActions: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  historyActionButtonSpacing: {
+    marginLeft: 16,
   },
   historyTitle: {
     fontSize: 18,
