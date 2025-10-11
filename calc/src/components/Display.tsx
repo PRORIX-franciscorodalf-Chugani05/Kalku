@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Text, View } from "react-native";
 
-import { Styles } from "@/styles/GlobalStyles";
+import { Styles } from "@/src/styles/GlobalStyles";
 
 type DisplayProps = {
   expression: string;

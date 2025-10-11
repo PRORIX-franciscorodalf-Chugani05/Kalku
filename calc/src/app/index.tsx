@@ -4,19 +4,19 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
 
-import Display from "@/components/calculator/Display";
-import HistoryModal from "@/components/calculator/HistoryModal";
-import Keypad from "@/components/calculator/Keypad";
-import { ThemeContext } from "@/context/themeContext";
-import { colorsPallette } from "@/styles/Colors";
-import { Styles } from "@/styles/GlobalStyles";
+import Display from "../components/Display";
+import HistoryModal from "../components/HistoryModal";
+import Keypad from "../components/Keypad";
+import { ThemeContext } from "../context/themeContext";
+import { colorsPallette } from "@/src/styles/Colors";
+import { Styles } from "@/src/styles/GlobalStyles";
 import {
   CalculatorState,
   HistoryEntry,
   MAX_HISTORY_ITEMS,
   OperatorSymbol,
   Token,
-} from "@/types/calculator";
+} from "../types/calculator";
 import {
   appendImplicitMultiplication,
   countUnmatchedParens,
@@ -26,7 +26,7 @@ import {
   isNumberToken,
   isOperator,
   trimLastCharacter,
-} from "@/utils/calculator";
+} from "@/src/utils/calculator";
 
 const createInitialState = (): CalculatorState => ({
   tokens: [],

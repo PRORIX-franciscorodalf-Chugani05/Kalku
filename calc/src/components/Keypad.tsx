@@ -1,9 +1,9 @@
 import { memo } from "react";
 import { View } from "react-native";
 
-import Button from "@/components/Buttons";
-import { Styles } from "@/styles/GlobalStyles";
-import { OperatorSymbol } from "@/types/calculator";
+import Button from "./Buttons";
+import { Styles } from "@/src/styles/GlobalStyles";
+import { OperatorSymbol } from "@/src/types/calculator";
 
 type KeypadProps = {
   onClear: () => void;

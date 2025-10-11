@@ -9,8 +9,8 @@ import {
   View,
 } from "react-native";
 
-import { Styles } from "@/styles/GlobalStyles";
-import { HistoryEntry } from "@/types/calculator";
+import { Styles } from "@/src/styles/GlobalStyles";
+import { HistoryEntry } from "@/src/types/calculator";
 import { Ionicons } from '@expo/vector-icons';
 
 type HistoryModalProps = {

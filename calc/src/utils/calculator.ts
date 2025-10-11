@@ -1,4 +1,4 @@
-import { MAX_DIGITS, OperatorSymbol, Token } from "@/types/calculator";
+import { MAX_DIGITS, OperatorSymbol, Token } from "../types/calculator";
 
 const operatorPrecedence: Record<OperatorSymbol, number> = {
   "+": 1,
