@@ -1,10 +1,11 @@
 # Kalku
 
 <div align="center">
-  <img src="./imgs/kalku.png" alt="Kalku" width="200">
+  <img src="./resources/imgs/kalku.png" alt="Kalku" width="200">
 </div>
 
 **Kalku** es una calculadora multiplataforma moderna construida con **Expo** y **React Native**. Combina un diseño colorido y amigable con un motor aritmético completo: historial interactivo, soporte de paréntesis, límites de dígitos inteligentes y detección automática del tema del sistema. Todo listo para ejecutarse en **iOS**, **Android** y **Web** desde el mismo código base.
+
 
 ## Tabla de contenidos
 
@@ -12,7 +13,6 @@
 - [Requisitos](#requisitos)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Puesta en marcha](#puesta-en-marcha)
-- [Scripts útiles](#scripts-útiles)
 
 
 ## Características principales
@@ -36,47 +36,58 @@
 
 ```
 calc/
-├── app/                 # Rutas Expo Router y pantalla principal
-├── components/          # Componentes reutilizables (botones, display, etc.)
-├── context/             # Contextos como el de tema
-├── assets/images/       # Logo y recursos gráficos
-├── styles/              # Paleta y estilos globales
-├── tsconfig.json        # Configuración y alias de TypeScript
-└── package.json         # Dependencias y scripts
-```
-
-```
-calc/
-├── app/                 # Rutas Expo Router y pantalla principal
-├── components/          # Componentes reutilizables (botones, display, etc.)
-├── context/             # Contextos como el de tema
-├── assets/images/       # Logo y recursos gráficos
-├── styles/              # Paleta y estilos globales
-├── tsconfig.json        # Configuración y alias de TypeScript
-└── package.json         # Dependencias y scripts
+├── README.md
+├── app.json
+├── assets                                  # Recursos gráficos
+│   └── images
+│       └── logo.png
+├── eslint.config.js
+├── expo-env.d.ts
+├── package-lock.json
+├── package.json                            # Dependencias y scripts
+├── src
+│   ├── app                                 # Rutas Expo Router y pantalla principal
+│   │   └── index.tsx
+│   ├── components                          # Componentes reutilizables (botones, display, etc.)
+│   │   ├── Buttons.tsx
+│   │   ├── Display.tsx
+│   │   ├── HistoryModal.tsx
+│   │   └── Keypad.tsx
+│   ├── context                             # Contextos como el de tema
+│   │   └── themeContext.tsx
+│   ├── styles                              # Paleta y estilos globales
+│   │   ├── Colors.tsx
+│   │   └── GlobalStyles.tsx
+│   ├── types
+│   │   └── calculator.ts
+│   └── utils
+│       └── calculator.ts
+└── tsconfig.json                           # Configuración y alias de TypeScript
 ```
 
 
 ## Puesta en marcha
 
+1. Install dependencies
+
 ```bash
-npm install
-npm run start
+  npm install
 ```
 
-Desde la interfaz de **Expo**, abre la app en:
+2. Navega al directorio del proyecto:
+
+```bash
+  cd calc
+```
+
+3. Start the app
+
+```bash
+  npx expo start
+```
+
+4. Desde la interfaz de **Expo**, abre la app en:
 
 * **iOS:** presiona `i` para abrir el simulador.
 * **Android:** presiona `a` o escanea el QR con **Expo Go**.
 * **Web:** selecciona la opción `w`.
-
-
-## Scripts útiles
-
-| Comando           | Descripción                        |
-| ----------------- | ---------------------------------- |
-| `npm start`       | Inicia el servidor de desarrollo   |
-| `npm run android` | Abre la app en un emulador Android |
-| `npm run ios`     | Abre la app en un simulador iOS    |
-| `npm run web`     | Lanza la versión web de la app     |
-| `npm run lint`    | Ejecuta ESLint con reglas de Expo  |
