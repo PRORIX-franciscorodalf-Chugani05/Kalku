@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
-import { Switch, Text, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from '@expo/vector-icons';
 
 import Display from "@/components/calculator/Display";
 import HistoryModal from "@/components/calculator/HistoryModal";
@@ -499,13 +500,38 @@ export default function Index() {
           <Display expression={expressionLabel} value={currentValue} screenColor={screenColor} textColor={textColor} />
 
           <View style={Styles.controlBar}>
-            <Switch value={isLightTheme} onValueChange={(value) => setTheme(value ? "light" : "dark")} />
-            <TouchableOpacity
-              style={[Styles.historyButton, { borderColor: textColor }]}
-              onPress={() => setHistoryVisible(true)}
-            >
-              <Text style={[Styles.historyButtonText, { color: textColor }]}>Historial</Text>
+            <TouchableOpacity onPress={() => setTheme(isLightTheme ? 'dark' : 'light')}>
+              <Ionicons
+                name={isLightTheme ? 'sunny' : 'moon'}
+                size={30}
+                color={isLightTheme ? 'orange' : 'white'}
+              />
             </TouchableOpacity>
+
+            <View style={Styles.calaculatorActions}>
+              <TouchableOpacity
+                style={[Styles.historyButton, { borderColor: textColor }]}
+                onPress={handleBackspace}
+              >
+                <Ionicons
+                  name={isLightTheme ? 'backspace' : 'backspace-outline'}
+                  size={30}
+                  color={isLightTheme ? 'black' : 'white'}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[Styles.historyButton, { borderColor: textColor }]}
+                onPress={() => setHistoryVisible(true)}
+              >
+                <Ionicons
+                  name={isLightTheme ? 'time' : 'time-outline'}
+                  size={30}
+                  color={isLightTheme ? 'black' : 'white'}
+                />
+              </TouchableOpacity>
+            </View>
+            
           </View>
 
           <View style={[Styles.separator, { backgroundColor: separatorColor }]} />
@@ -519,7 +545,6 @@ export default function Index() {
             onPercent={handlePercent}
             onOperatorPress={handleOperatorPress}
             onEquals={handleEquals}
-            onBackspace={handleBackspace}
             parenthesisLabel={parenthesisButtonLabel}
           />
 

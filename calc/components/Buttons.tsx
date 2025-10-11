@@ -6,7 +6,7 @@ import { ThemeContext } from "@/context/themeContext";
 
 interface ButtonProps {
   label: string;
-  type?: "num" | "op" | "equal" | "clear" | "result";
+  type?: "num" | "op" | "equal" | "clear";
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
 }
@@ -24,8 +24,6 @@ const Button: React.FC<ButtonProps> = ({ label, type, onPress, style }) => {
         return theme === "light" ? colorsPallette.equalLight : colorsPallette.equalDark;
       case "clear":
         return theme === "light" ? colorsPallette.clearLight : colorsPallette.clearDark;
-      case "result":
-        return theme === "light" ? colorsPallette.resultLight : colorsPallette.resultDark;
       default:
         return theme === "light" ? colorsPallette.bgLight : colorsPallette.bgDark;
     }

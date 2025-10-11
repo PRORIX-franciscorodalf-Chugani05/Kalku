@@ -11,6 +11,7 @@ import {
 
 import { Styles } from "@/styles/GlobalStyles";
 import { HistoryEntry } from "@/types/calculator";
+import { Ionicons } from '@expo/vector-icons';
 
 type HistoryModalProps = {
   visible: boolean;
@@ -44,15 +45,26 @@ const HistoryModal = ({
               <Text style={[Styles.historyTitle, { color: textColor }]}>Historial</Text>
               <View style={Styles.historyActions}>
                 {history.length > 0 ? (
-                  <TouchableOpacity onPress={onClear}>
-                    <Text style={[Styles.historyButtonText, { color: textColor }]}>Vaciar</Text>
+                  <TouchableOpacity
+                    style={[Styles.historyButton, { borderColor: textColor }]}
+                    onPress={onClear}
+                  >
+                    <Ionicons
+                      name={isLightTheme ? 'trash' : 'trash-outline'}
+                      size={30}
+                      color={isLightTheme ? 'black' : 'white'}
+                    />
                   </TouchableOpacity>
                 ) : null}
                 <TouchableOpacity
                   style={history.length > 0 ? Styles.historyActionButtonSpacing : undefined}
                   onPress={onClose}
                 >
-                  <Text style={[Styles.historyButtonText, { color: textColor }]}>Cerrar</Text>
+                  <Ionicons
+                    name={isLightTheme ? 'close-circle' : 'close-circle-outline'}
+                    size={30}
+                    color={isLightTheme ? 'black' : 'white'}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -87,12 +99,16 @@ const HistoryModal = ({
                   </View>
                   <TouchableOpacity
                     style={[Styles.historyDeleteButton, { borderColor: textColor }]}
-                    onPress={(event: GestureResponderEvent) => {
-                      event.stopPropagation();
-                      onDelete(index);
+                    onPress={(event) => {
+                    event.stopPropagation();
+                    onDelete(index);
                     }}
                   >
-                    <Text style={[Styles.historyDeleteText, { color: textColor }]}>Borrar</Text>
+                    <Ionicons
+                      name={isLightTheme ? 'remove-circle' : 'remove-circle-outline'}
+                      size={26}
+                      color={isLightTheme ? 'black' : 'white'}
+                    />
                   </TouchableOpacity>
                 </TouchableOpacity>
               )}

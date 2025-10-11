@@ -20,7 +20,7 @@ export const Styles = StyleSheet.create({
   },
   screen: {
     borderRadius: 24,
-    padding: 24,
+    padding: 20,
     height: 150,
     justifyContent: "space-between",
     alignItems: "flex-end",
@@ -39,6 +39,10 @@ export const Styles = StyleSheet.create({
   resultText: {
     fontSize: 64,
     fontWeight: "700",
+  },
+  calaculatorActions: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   keypad: {
     marginTop: 18,
@@ -63,14 +67,8 @@ export const Styles = StyleSheet.create({
     flex: 2,
   },
   historyButton: {
-    borderWidth: 1,
-    borderRadius: 999,
     paddingHorizontal: 16,
     paddingVertical: 8,
-  },
-  historyButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
   },
   historyModalOverlay: {
     flex: 1,
@@ -127,8 +125,6 @@ export const Styles = StyleSheet.create({
     opacity: 0.6,
   },
   historyDeleteButton: {
-    borderWidth: 1,
-    borderRadius: 14,
     paddingHorizontal: 12,
     paddingVertical: 6,
   },

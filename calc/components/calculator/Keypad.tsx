@@ -14,7 +14,6 @@ type KeypadProps = {
   onPercent: () => void;
   onOperatorPress: (operator: OperatorSymbol) => void;
   onEquals: () => void;
-  onBackspace: () => void;
   parenthesisLabel: string;
 };
 
@@ -27,7 +26,6 @@ const Keypad = ({
   onPercent,
   onOperatorPress,
   onEquals,
-  onBackspace,
   parenthesisLabel,
 }: KeypadProps) => (
   <View style={Styles.keypad}>
@@ -59,7 +57,6 @@ const Keypad = ({
     <View style={Styles.row}>
       <Button label="0" type="num" style={Styles.zeroButton} onPress={() => onNumberPress("0")} />
       <Button label="." type="num" onPress={onDecimal} />
-      <Button label="DEL" type="clear" onPress={onBackspace} />
       <Button label="=" type="equal" onPress={onEquals} />
     </View>
   </View>
