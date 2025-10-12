@@ -1,7 +1,7 @@
 # Kalku
 
 <div align="center">
-  <img src="./resources/imgs/kalku.png" alt="Kalku" width="200">
+  <img src="./resources/demostracion.gif" alt="Kalku" width="200">
 </div>
 
 **Kalku** es una calculadora multiplataforma moderna construida con **Expo** y **React Native**. Combina un diseño colorido y amigable con un motor aritmético completo: historial interactivo, soporte de paréntesis, límites de dígitos inteligentes y detección automática del tema del sistema. Todo listo para ejecutarse en **iOS**, **Android** y **Web** desde el mismo código base.
